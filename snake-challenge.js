@@ -97,8 +97,8 @@ function yourScript() {
     return self.choice;
   };
   
-  self.conservative = function(){
-    if(self.food_x - self.head_x > Math.floor(self.eaten/50) && self.isSafe(RIGHT) && 
+  self.conservative = function(buffer){
+    if(self.food_x - self.head_x > Math.floor(self.eaten/buffer) && self.isSafe(RIGHT) && 
       (self.isCellEmpty(0, 29) || self.food_x < self.snake_sections[0].split(',')[0])){
       return RIGHT;
     }
@@ -137,11 +137,14 @@ function yourScript() {
   
   self.options = self.getOpenCellDirections();
   self.desired_dirs = self.getDesiredDirections();
-  if(self.eaten < 50){
+  if(self.eaten < 40){
     return self.aggresive();
   }
-  else if(self.eaten < 700){
-    return self.conservative();    
+  else if(self.eaten < 100){
+    return self.conservative(40);
+  }
+  else if(self.eaten < 600){
+    return self.conservative(100);    
   }
   else{
     return self.stall();
