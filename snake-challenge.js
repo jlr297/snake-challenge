@@ -98,6 +98,19 @@ function yourScript() {
   };
   
   self.conservative = function(){
+    if(self.food_x - self.head_x > Math.floor(self.eaten/50) && self.isSafe(RIGHT) && 
+      (self.isCellEmpty(0, 29) || self.food_x < self.snake_sections[0].split(',')[0])){
+      return RIGHT;
+    }
+    else if(self.isFoodLeft() && self.isSafe(RIGHT) && self.isCellEmpty(0, 29)){
+      return RIGHT;
+    }
+    else{
+      return self.stall();
+    }
+  };
+  
+  self.semiConservative = function(){
     if(self.head_x === 0 || self.head_x === 39 || self.head_y === 0 || self.head_y === 29 || self.food_x === 39){
       return self.stall();
     }
@@ -127,7 +140,7 @@ function yourScript() {
   if(self.eaten < 50){
     return self.aggresive();
   }
-  else if(self.eaten < 600){
+  else if(self.eaten < 700){
     return self.conservative();    
   }
   else{
