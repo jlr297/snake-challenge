@@ -32,33 +32,73 @@ function yourScript() {
     }
   };
   
-  self.options = self.getOpenCellDirections();
-  self.desired_dirs = [];
-  if(self.head_x > self.food_x){
-    self.desired_dirs.push(LEFT);
-  }
-  else if(self.head_x < self.food_x){
-    self.desired_dirs.push(RIGHT);
-  }
-  if(self.head_y > self.food_y){
-    self.desired_dirs.push(UP);
-  }
-  else if(self.head_y < self.food_y){
-    self.desired_dirs.push(DOWN);
-  }
-  if(self.peekForCollision(self.direction)){
-    var result = self.getDirectionForCollision();
-    if(result && self.options.indexOf(result) >= 0){
-     return result; 
+  self.getDesiredDirections = function(){
+    var dirs = [];
+    if(self.head_x > self.food_x){
+      dirs.push(LEFT);
     }
-  }
+    else if(self.head_x < self.food_x){
+      dirs.push(RIGHT);
+    }
+    if(self.head_y > self.food_y){
+      dirs.push(UP);
+    }
+    else if(self.head_y < self.food_y){
+      dirs.push(DOWN);
+    }
+    return dirs;
+  };
   
-  for(var i=0; i < self.options.length; ++i){
-    self.choice = self.options[i];
-    if(self.desired_dirs.indexOf(self.choice) >= 0){
-      return self.choice;
+  self.isSafe = function(option){
+    return self.options.indexOf(option) >= 0;
+  };
+  
+  self.stall = function(){
+    if(self.head_y == 29 && self.head_x !== 0){
+      return LEFT;
     }
-  }
-  return self.choice;
+    else{
+      if(self.head_x % 2 === 0){
+        if(self.isSafe(UP)){
+          return UP;
+        }
+        else{
+          return RIGHT;
+        }
+      }
+      else{
+        if(self.head_y < 28){
+          return DOWN;
+        }
+        else if(self.isSafe(RIGHT)){
+          return RIGHT;
+        }
+        else{
+          return DOWN;
+        }
+      }
+    }
+  };
+  
+  self.strategyOne = function(){
+    if(self.peekForCollision(self.direction)){
+      var result = self.getDirectionForCollision();
+      if(result && self.isSafe(result)){
+       return result; 
+      }
+    }
+    
+    for(var i=0; i < self.options.length; ++i){
+      self.choice = self.options[i];
+      if(self.desired_dirs.indexOf(self.choice) >= 0){
+        return self.choice;
+      }
+    }
+    return self.choice;
+  };
+  
+  self.options = self.getOpenCellDirections();
+  self.desired_dirs = self.getDesiredDirections();
+  return self.stall();
 }
 
