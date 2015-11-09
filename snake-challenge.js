@@ -67,7 +67,7 @@ function yourScript() {
         }
       }
       else{
-        if(self.head_y < 28){
+        if(self.head_y < 28 && self.isSafe(DOWN)){
           return DOWN;
         }
         else if(self.isSafe(RIGHT)){
@@ -80,7 +80,7 @@ function yourScript() {
     }
   };
   
-  self.strategyOne = function(){
+  self.aggresive = function(){
     if(self.peekForCollision(self.direction)){
       var result = self.getDirectionForCollision();
       if(result && self.isSafe(result)){
@@ -97,8 +97,41 @@ function yourScript() {
     return self.choice;
   };
   
+  self.conservative = function(){
+    if(self.head_x === 0 || self.head_x === 39 || self.head_y === 0 || self.head_y === 29 || self.food_x === 39){
+      return self.stall();
+    }
+    if(self.isCellEmpty(0, 29)){
+      if(self.isFoodRight()){
+        return RIGHT;
+      }
+      else if(!self.isFoodLeft()){
+        if(self.isFoodAbove()){
+          return UP;
+        }
+        else{
+          return DOWN;
+        }
+      }
+      else {
+        return RIGHT;
+      }
+    }
+    else{
+      return self.stall();
+    }
+  };
+  
   self.options = self.getOpenCellDirections();
   self.desired_dirs = self.getDesiredDirections();
-  return self.stall();
+  if(self.eaten < 50){
+    return self.aggresive();
+  }
+  else if(self.eaten < 600){
+    return self.conservative();    
+  }
+  else{
+    return self.stall();
+  }
 }
 
